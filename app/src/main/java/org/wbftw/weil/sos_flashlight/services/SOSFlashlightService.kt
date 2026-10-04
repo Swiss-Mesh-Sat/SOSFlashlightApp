@@ -1,3 +1,5 @@
+// Modified by Swiss Mesh Sat (swissmeshsat.ch), 2026:
+// added SOS Bridge broadcasts (SOS_STARTED / SOS_STOPPED) for the ATAK plugin.
 package org.wbftw.weil.sos_flashlight.services
 
 import android.Manifest
@@ -37,6 +39,7 @@ class SOSFlashlightService : Service() {
     private var tonePlayer: TonePlayer? = null
 
     private var isRunning = AtomicBoolean(false)
+    private var bridgeAnnouncedOn = false // SOS Bridge: last state announced
     private var sosThread: Thread? = null
 
     private lateinit var localBroadcastManager: LocalBroadcastManager
@@ -130,12 +133,14 @@ class SOSFlashlightService : Service() {
         }
 
         isRunning.set(true)
+        notifySosBridge(true)
         startSOSPattern()
     }
 
     private fun stopSendingMessage() {
         Log.d(TAG, "Stopping SOS service")
         isRunning.set(false)
+        notifySosBridge(false)
         sosThread?.interrupt()
         sosThread = null
         sendFinishedBroadcast()
@@ -150,6 +155,15 @@ class SOSFlashlightService : Service() {
         intent.putExtra(EXTRA_LIGHT_STATE, isLightOn)
         intent.putExtra(EXTRA_MESSAGE, char)
         localBroadcastManager.sendBroadcast(intent)
+    }
+
+    // SOS Bridge: tell the ATAK plugin whether SOS is signaling (only on state change)
+    private fun notifySosBridge(active: Boolean) {
+        if (bridgeAnnouncedOn == active) return
+        bridgeAnnouncedOn = active
+        val intent = Intent(if (active) BRIDGE_SOS_STARTED else BRIDGE_SOS_STOPPED)
+        sendBroadcast(intent)
+        Log.d(TAG, "SOS Bridge notified: " + (if (active) "STARTED" else "STOPPED"))
     }
 
     private fun sendFinishedBroadcast() {
@@ -385,6 +399,7 @@ class SOSFlashlightService : Service() {
         releaseSound()
         releaseCamera()
         sendFinishedBroadcast()
+        notifySosBridge(false)
         super.onDestroy()
     }
 
@@ -395,6 +410,8 @@ class SOSFlashlightService : Service() {
         const val ACTION_REFRESH_CONFIG = "org.wbftw.weil.sos_flashlight.REFRESH_CONFIG"
         const val ACTION_SOS_SIGNAL = "org.wbftw.weil.sos_flashlight.SOS_SIGNAL"
         const val ACTION_SOS_FINISHED = "org.wbftw.weil.sos_flashlight.SOS_FINISHED"
+        const val BRIDGE_SOS_STARTED = "ch.swissmeshsat.sosbridge.SOS_STARTED"
+        const val BRIDGE_SOS_STOPPED = "ch.swissmeshsat.sosbridge.SOS_STOPPED"
         const val EXTRA_MESSAGE = "org.wbftw.weil.sos_flashlight.MESSAGE"
         const val EXTRA_LIGHT_STATE = "org.wbftw.weil.sos_flashlight.LIGHT_STATE"
         const val CHANNEL_ID = "SOSFlashlightChannel"
