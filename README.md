@@ -1,3 +1,20 @@
+# SOS Flashlight + ATAK
+
+> **This is a modified version (fork) of [SOS Flashlight](https://github.com/WeilJimmer/SOSFlashlightApp) by WeilJimmer**, maintained by [Swiss Mesh Sat](https://swissmeshsat.ch) for use with the [SOS Bridge](https://github.com/Swiss-Mesh-Sat/sos-bridge) ATAK plugin.
+
+## What this version changes
+
+- When SOS signaling starts or stops, the app sends a system broadcast (`ch.swissmeshsat.sosbridge.SOS_STARTED` / `SOS_STOPPED`). With the SOS Bridge plugin loaded in ATAK, this triggers and cancels the ATAK emergency alert.
+- Own app identity (`ch.swissmeshsat.sosflashlight`, name "SOS Flashlight + ATAK"), so it can be installed alongside the original app.
+
+Everything else is the original app. All changes are on the `sos-bridge` branch and can be compared with the original project; modified source files carry a notice.
+
+Licensed under GPLv3, like the original. All credit for SOS Flashlight goes to its author. Please report issues related to these changes here, not to the original project.
+
+> **The original README follows.** Download links and badges below refer to the original app, not to this version.
+
+---
+
 # SOS Flashlight: Advanced Morse Code Communication Tool
 
 SOS Flashlight App transforms your smartphone into a powerful Morse code signaling device, capable of transmitting emergency messages or custom text through multiple channels simultaneously.
