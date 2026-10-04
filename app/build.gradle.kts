@@ -9,7 +9,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "org.wbftw.weil.sos_flashlight"
+        applicationId = "ch.swissmeshsat.sosflashlight"
         minSdk = 23
         targetSdk = 36
         versionCode = 10003
